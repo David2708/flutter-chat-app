@@ -40,7 +40,7 @@ class ChatScreen extends StatelessWidget {
             Container(
               color:  Colors.white,
               height: 50,
-              child: _InputChat()
+              child: const _InputChat()
             )
           ],
         )

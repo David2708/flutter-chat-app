@@ -1,4 +1,7 @@
+import 'package:chat/helpers/mostrar_alerta.dart';
+import 'package:chat/services/auth_services.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/widgets.dart';
 
@@ -52,6 +55,10 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+
+
     return SizedBox(
       child: Container(
         margin: const EdgeInsets.only(top: 50),
@@ -73,9 +80,22 @@ class _FormState extends State<_Form> {
             ),
             BotonAzul(
               text: 'Ingresar',
-              onPressed: () {
+              color: authService.autenticando ? Colors.grey : Colors.blue,
+              onPressed: authService.autenticando ? (){} : () async {
                 print(emailCtrl.text);
                 print(passCtrl.text);
+
+                FocusScope.of(context).unfocus();
+
+                final loginOk =  await authService.login(emailCtrl.text.trim(), passCtrl.text.trim());
+
+                if( loginOk ){
+                  //todo: conectar al socket server
+                  Navigator.pushReplacementNamed(context, 'users');
+                } else{
+                  mostrarAlerta(context, 'Login incorrecto', 'Revise sus credenciales nuevamente');
+                }
+                
               },
             )
           ],

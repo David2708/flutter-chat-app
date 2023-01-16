@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../helpers/mostrar_alerta.dart';
+import '../services/auth_services.dart';
 import '../widgets/widgets.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -47,6 +50,9 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);
+
     return SizedBox(
       child: Container(
         margin: const EdgeInsets.only(top: 50),
@@ -75,10 +81,24 @@ class _FormState extends State<_Form> {
             ),
             BotonAzul(
               text: 'Registrarse',
-              onPressed: () {
-                print(nameCtrl.text);
-                print(emailCtrl.text);
-                print(passCtrl.text);
+              color: authService.autenticando ? Colors.grey : null,
+              onPressed: authService.autenticando ? (){} : () async{
+
+                FocusScope.of(context).unfocus();
+
+                final registerOk = await authService.register(
+                  nameCtrl.text.trim(), emailCtrl.text.trim(), passCtrl.text.trim()
+                );
+
+                if(registerOk == true){
+                  // todo: conectar con socketserver
+                  Navigator.pushReplacementNamed(context, 'users');
+                } else{
+                  mostrarAlerta(context, 'Registro incorrecto', registerOk);
+                }
+
+
+
               },
             )
           ],

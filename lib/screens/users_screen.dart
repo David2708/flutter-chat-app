@@ -1,4 +1,7 @@
+import 'package:chat/models/Usuario.dart';
+import 'package:chat/services/auth_services.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -25,8 +28,12 @@ class _UsersScreenState extends State<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final authService = Provider.of<AuthService>(context);    
+    final Usuario usuario = authService.usuario!;
+
     return Scaffold(
-      appBar: myappbar(),
+      appBar: myappbar(usuario),
       body: SmartRefresher(
         physics: const BouncingScrollPhysics(),
         controller: _refreshController,
@@ -41,14 +48,18 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
-  AppBar myappbar() {
+  AppBar myappbar(Usuario usuario) {
     return AppBar(
       centerTitle: true,
-      title: const Text('Mi Nombre', style: TextStyle(color: Colors.black87)),
+      title: Text( usuario.nombre! , style: TextStyle(color: Colors.black87)),
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            //todo: desconectar del socket server
+            Navigator.pushReplacementNamed(context, 'login');
+            AuthService.deleteToken();
+          },
           icon: const Icon( Icons.logout_outlined, color: Colors.black87,)
       ),
       actions: [
